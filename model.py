@@ -1,26 +1,31 @@
 import pandas as pd
 import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from bayesiansets import BayesianSets
+from treattext import TreatText
 
-# TODO
-def test_movies():
-	df = pd.read_csv('datasets/movies.csv', index_col=0)
+# Load Movies from CSV
+df = pd.read_csv('datasets/movies.csv', index_col=0)
+df['title'] = df['title'].apply(TreatText().run)
 
-	vect = TfidfVectorizer()
+# Find similar movies
+query = np.array([
+	'toy story',
+	'the lion king',
+	'alladin',
+	'beauty and the best',
+	'cinderella',
+	'little mermaid',
+	'hercules'
+])
 
-	X = vect.fit_transform(df['title'])
+query_ids = df.loc[df['title'].isin(query)].index.tolist()
+query_ids = np.array(query_ids)
 
-	query = [
-		'toy story',
-		'the lion king',
-		'alladin',
-		'beauty and the best',
-		'cinderella',
-		'little mermaid',
-		'hercules'
-	]
+X = TfidfVectorizer().fit_transform(df['title'])
 
-	model = BayesianSets(X)
-	ranking = np.argsort(model.compute_scores(query))[::-1]
-	top10 = ranking[:10]
+model = BayesianSets(X)
+
+# ranking = np.argsort(model.compute_scores(query_ids))[::-1]
+# top10 = ranking[:10]
+

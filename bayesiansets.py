@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.sparse import csr_matrix
+from sklearn.preprocessing import Normalizer, Binarizer
 
 class BayesianSets:
 	def __init__(self, dataset, c=2):
@@ -16,6 +17,7 @@ class BayesianSets:
 
 	def compute_parameters(self, query_indices):
 		N = len(query_indices)
+
 		sum_x = np.sum(self.dataset[query_indices], axis=0)
 
 		alphaTilde = self.alpha + sum_x
